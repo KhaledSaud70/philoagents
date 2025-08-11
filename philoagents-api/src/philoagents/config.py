@@ -19,6 +19,8 @@ class Settings(BaseSettings):
         ..., description="Connection URI for the local MongoDB Atlas instance."
     )
     MONGO_DB_NAME: str = "philoagents"
+    MONGO_STATE_CHECKPOINT_COLLECTION: str = "philosopher_state_checkpoints"
+    MONGO_STATE_WRITES_COLLECTION: str = "philosopher_state_writes"
     MONGO_LONG_TERM_MEMORY_COLLECTION: str = "philosopher_long_term_memory"
 
     # -- RAG Configuration ---
