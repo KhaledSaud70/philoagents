@@ -3,6 +3,7 @@ from typing import Any, AsyncGenerator, Union
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from langgraph.checkpoint.mongodb.aio import AsyncMongoDBSaver
+from opik.integrations.langchain import OpikTracer
 
 from philoagents.application.conversation_service.workflow.graph import (
     create_workflow_graph,
@@ -108,12 +109,14 @@ async def get_streaming_response(
             writes_collection_name=settings.MONGO_STATE_WRITES_COLLECTION,
         ) as checkpointer:
             graph = graph_builder.compile(checkpointer=checkpointer)
+            opik_tracer = OpikTracer(graph=graph.get_graph(xray=True))
 
             thread_id = (
                 philosopher_id if not new_thread else f"{philosopher_id}-{uuid.uuid4()}"
             )
             config = {
                 "configurable": {"thread_id": thread_id},
+                "callbacks": [opik_tracer],
             }
 
             async for chunk in graph.astream(
